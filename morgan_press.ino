@@ -20,6 +20,7 @@ LiquidCrystal_I2C lcd(0x27,20,4);
 #define MENU_ITYPE_SUBMENU 2
 #define MENU_ITYPE_CANCEL 3
 #define MENU_ITYPE_OK 4
+#define MENU_ITYPE_OP 5
 
 
 #define NUMBER_OF_TIMERS 7
@@ -146,11 +147,26 @@ int menu_handler(int m, int p, int cmd = 0, boolean edit = false) {
     case 2:  // MENU Configuration 
       switch(cmd){
         case MENU_CMD_HEADER:  lcd.print("Configuration"); return 0;
-        case MENU_CMD_NITEMS: return NUMBER_OF_TIMERS+4+1;
+        case MENU_CMD_NITEMS: return NUMBER_OF_TIMERS+7;
         case MENU_CMD_ITEM_TYPE:
           if(p<NUMBER_OF_TIMERS+4) return MENU_ITYPE_FIELD;
-          if(p == NUMBER_OF_TIMERS+4) return MENU_ITYPE_CANCEL;
+          if(p == NUMBER_OF_TIMERS+6) return MENU_ITYPE_CANCEL;
+          if(p >= NUMBER_OF_TIMERS+4) return MENU_ITYPE_OP;
           return MENU_ITYPE_FIELD;
+          break;
+        case MENU_CMD_ENTER:
+          if(p==NUMBER_OF_TIMERS+4) // load configuration
+          {
+            lcd.clear();
+            lcd.print("Load configuration");
+            delay(2000);
+          }
+          if(p==NUMBER_OF_TIMERS+5) // save configuration
+          {
+            lcd.clear();
+            lcd.print("Save configuration");
+            delay(2000);
+          }
           break;
         case MENU_CMD_UP:
         case MENU_CMD_DOWN:
@@ -173,6 +189,12 @@ int menu_handler(int m, int p, int cmd = 0, boolean edit = false) {
               case 2:lcd.print("CP");break;
               case 3:lcd.print("PP");break;
             }
+          }else
+          if(p==NUMBER_OF_TIMERS+4){
+            lcd.print("Load config");
+          }else 
+          if(p==NUMBER_OF_TIMERS+5){
+            lcd.print("Save config");
           }else {
             lcd.print("<Back");
           }
@@ -226,6 +248,11 @@ int menu(int m){
           edit = true;
           lcd.setCursor(1, pos+1);
           menu_handler(m, offset + pos, MENU_CMD_PRINT, edit);
+          break;
+        case MENU_ITYPE_OP:
+          menu_handler(m, offset + pos, MENU_CMD_ENTER, edit);
+          refresh = true;
+          lcd.clear();
           break;
         case MENU_ITYPE_SUBMENU:  
           r = menu_handler(m, offset+pos, MENU_CMD_ENTER);
