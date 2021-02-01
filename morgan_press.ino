@@ -23,6 +23,7 @@ LiquidCrystal_I2C lcd(0x27,20,4);
 
 
 #define NUMBER_OF_TIMERS 7
+
 typedef struct {
   uint16_t v;
   uint16_t m;
@@ -194,7 +195,6 @@ int menu(int m){
   
   char k;
   n = menu_handler(m, 0, -2);
-  Serial.print("Starting menu ");  Serial.println(m);
   while (1) {
     k = getKey();
     if (edit) {
@@ -207,7 +207,6 @@ int menu(int m){
       }
     }
     if (k == 'E') {
-      Serial.println("Click");
       if (edit){
         edit = false;
         lcd.setCursor(1, pos+1);
@@ -215,15 +214,12 @@ int menu(int m){
         continue;
       }
       itype = menu_handler(m, offset+pos, MENU_CMD_ITEM_TYPE); 
-      Serial.print("Item type is ");Serial.println(itype);
       switch(itype) {
         case MENU_ITYPE_CANCEL:
-          Serial.print("Leaving menu ");Serial.println(m);
           lcd.clear();
           return 0;
         case MENU_ITYPE_OK:
           r = menu_handler(m, offset+pos, MENU_CMD_ENTER);
-          Serial.print("Leaving menu ");Serial.println(m);
           lcd.clear();
           return r;
         case MENU_ITYPE_FIELD:
@@ -233,7 +229,6 @@ int menu(int m){
           break;
         case MENU_ITYPE_SUBMENU:  
           r = menu_handler(m, offset+pos, MENU_CMD_ENTER);
-          Serial.print("Entering into submenu "); Serial.println(r);
           if (menu(r) == 1)
             return 1;
           refresh = true;
@@ -283,8 +278,6 @@ int menu(int m){
     }
   }
   lcd.clear();
-  Serial.print("Leaving menu ");Serial.println(m);
-  
 }
 void loop()
 {
